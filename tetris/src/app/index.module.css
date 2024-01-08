@@ -43,7 +43,6 @@
   box-sizing: border-box;
 }
 
-
 @media (min-width: 640px) {
   .container {
     max-width: 640px;
