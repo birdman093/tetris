@@ -221,9 +221,9 @@ export default function Home() {
       );
     }
 
-
     return (
       <div className={styles.board}>
+        {grid}
       </div>)
   }
 
@@ -237,9 +237,7 @@ export default function Home() {
         <h3 className = {styles.scores}>Score : {highscore}</h3>
         <h3>Game State : {game}</h3>
       </div>
-      <div className={styles.canvas}>
-        {displayBoard()}
-      </div>
+      {displayBoard()}
     </main>
   );
 }
