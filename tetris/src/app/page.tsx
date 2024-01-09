@@ -93,13 +93,9 @@ export default function Home() {
     };
   }, []);
 
-  const startPiece = (newPiece: AbstractPiece) => {
+  const startPiece = (newPiece: AbstractPiece, resetTimer: boolean) => {
     const currpiece = pieceRef.current;
     const currboard = boardRef.current;
-    // clear current piece
-    if (currpiece != null){
-      clearInterval(currpiece.speed)
-    }
 
     // check if piece can be created
     for (const point of newPiece.getAllPoints()) {
@@ -107,12 +103,24 @@ export default function Home() {
       if (currentrow && currentrow[point.x()] === true) {
         setGame("NONE");
         setScore(1000);
+        if (currpiece != null){
+          clearInterval(currpiece.speed)
+        }
+        return;
       }
     }
-
-    // timer confused for Node.js timeout -- assert return type
-    newPiece.speed = 
-    setInterval(movePiece, speedRef.current, 0,1,0) as unknown as number;
+    // clear and set timer
+    if (currpiece != null && resetTimer){
+      clearInterval(currpiece.speed)
+      // timer confused for Node.js timeout -- assert return type
+      newPiece.speed = 
+      setInterval(movePiece, speedRef.current, 0,1,0) as unknown as number;
+    } else if (currpiece!= null){
+      newPiece.speed = currpiece.speed;
+    } else {
+      newPiece.speed = 
+      setInterval(movePiece, speedRef.current, 0,1,0) as unknown as number;
+    }   
     setPiece(newPiece);
   }
 
@@ -130,20 +138,20 @@ export default function Home() {
       if (bottomCollisionCheck(currpiece.getAllOffsetPoints(xOffset, yOffset)))
       {
         updateBoard(currpiece.getAllPoints());
-        startPiece(createPiece(COLS/2, 1));
+        startPiece(createPiece(COLS/2, 1), true);
         return;
       }
 
       // piece collision -- update board, create new piece
       if (pieceCollisonCheck(currpiece.getAllOffsetPoints(xOffset, yOffset))) {
         updateBoard(currpiece.getAllPoints());
-        startPiece(createPiece(COLS/2, 1));
+        startPiece(createPiece(COLS/2, 1), true);
         return;
       }
 
       // no collision -- update piece
       startPiece(recreatePieceWOffset(
-        xOffset, yOffset, rotationOffset, currpiece))
+        xOffset, yOffset, rotationOffset, currpiece), yOffset === 1)
     }
     
   };
