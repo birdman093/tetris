@@ -2,9 +2,10 @@
 import Link from "next/link";
 import { Dispatch, SetStateAction, useState, useEffect, useRef } from "react";
 import _ from 'lodash';
-import { Piece, Location } from "./piece";
+import { AbstractPiece, Location, createPiece, recreatePieceWOffset} from "./piece";
 
 import styles from "./index.module.css";
+import "../styles/pieces.css";
 
 const ROWS = 20;
 const COLS = 10;
@@ -12,12 +13,6 @@ const NOGAME = "NONE";
 const PLAYING = "PLAYING";
 const PAUSED = "PAUSED";
 const GAMESTATES = [PLAYING, NOGAME, PAUSED];
-const BOUNDARY = "BOUNDARY";
-const BOTTOM = "BOTTOM";
-const PIECE = "PIECE";
-const NONE = "NONE"
-const COLLISIONSTATES = [BOUNDARY, BOTTOM, PIECE, NONE];
-const RED = "red";
 
 function resetBoard() { 
   let matrix = [];
@@ -31,15 +26,13 @@ function resetBoard() {
   return matrix
 }
 
-function createPiece() {
-  return new Piece(COLS/2,2,0,-1,RED);
-}
+
 
 export default function Home() {
 
   const [game, setGame] = useState(NOGAME);
   const [board, setBoard] = useState(resetBoard());
-  const [piece, setPiece] = useState<Piece|null>(null);
+  const [piece, setPiece] = useState<AbstractPiece|null>(null);
   const [score, setScore] = useState(0);
   const [highscore, setHighScore] = useState(0);
   const [speed, setSpeed] = useState(1000);
@@ -100,11 +93,21 @@ export default function Home() {
     };
   }, []);
 
-  const startPiece = (newPiece: Piece) => {
+  const startPiece = (newPiece: AbstractPiece) => {
     const currpiece = pieceRef.current;
+    const currboard = boardRef.current;
     // clear current piece
     if (currpiece != null){
       clearInterval(currpiece.speed)
+    }
+
+    // check if piece can be created
+    for (const point of newPiece.getAllPoints()) {
+      const currentrow = currboard[point.y()];
+      if (currentrow && currentrow[point.x()] === true) {
+        setGame("NONE");
+        setScore(1000);
+      }
     }
 
     // timer confused for Node.js timeout -- assert return type
@@ -127,25 +130,20 @@ export default function Home() {
       if (bottomCollisionCheck(currpiece.getAllOffsetPoints(xOffset, yOffset)))
       {
         updateBoard(currpiece.getAllPoints());
-        startPiece(createPiece());
+        startPiece(createPiece(COLS/2, 1));
         return;
       }
 
       // piece collision -- update board, create new piece
       if (pieceCollisonCheck(currpiece.getAllOffsetPoints(xOffset, yOffset))) {
         updateBoard(currpiece.getAllPoints());
-        startPiece(createPiece());
+        startPiece(createPiece(COLS/2, 1));
         return;
       }
 
       // no collision -- update piece
-     startPiece(new Piece(
-      currpiece.x() + xOffset, 
-      currpiece.y() + yOffset, 
-      currpiece.rotation + rotationOffset,
-      currpiece.speed, 
-      currpiece.color
-      ))
+      startPiece(recreatePieceWOffset(
+        xOffset, yOffset, rotationOffset, currpiece))
     }
     
   };
@@ -217,7 +215,7 @@ export default function Home() {
     setScore(0);
     setGame("PLAYING")
     setBoard(resetBoard());
-    setPiece(createPiece());
+    setPiece(createPiece(COLS/2, 1));
   }
 
   const displayBoard = () => {
@@ -225,7 +223,9 @@ export default function Home() {
     for (let y = 0; y < ROWS; y++) {
       const row = [];
       for (let x = 0; x < COLS; x++) {
-          let squareClass = `${styles.gridSquare} ${styles.blankSquare}`;
+          let pieceClass = `${styles.gridSquare} ${styles.blankSquare}`;
+
+          // color board
           if (board){
             const currentrow = board[y];
             if (!currentrow){
@@ -233,21 +233,18 @@ export default function Home() {
             }
             const currelm = currentrow[x];
             if (currelm === true) {
-              squareClass = `${styles.gridSquare} ${styles.yellowSquare}`;
+              pieceClass = `${styles.gridSquare} ${styles.lockedBlock}`;
             }
           }
 
+          // color piece
           if (piece && piece.isPieceAtPoint(x, y))
           {
-            if (piece.color === RED) {
-              squareClass = `${styles.gridSquare} ${styles.redSquare}`;
-            } else {
-              squareClass = `${styles.gridSquare} ${styles.greenSquare}`;
-            }
+            pieceClass = `${styles.gridSquare} ${piece.style}`;
           }
 
           row.push(
-              <div key={`${y}-${x}`} className={squareClass}></div>
+              <div key={`${y}-${x}`} className={pieceClass}></div>
           );
       }
       grid.push(

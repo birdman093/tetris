@@ -1,0 +1,27 @@
+.squarePiece {
+    background-color: #FDFD96;
+  }
+  
+  .trianglePiece {
+    background-color: #A7C7E7
+  }
+  
+  .rightLPiece {
+    background-color: #B2FBA5;
+  }
+  
+  .leftLPiece {
+    background-color: #56AE57;
+  }
+  
+  .leftZPiece {
+    background-color:#C23B22;
+  }
+  
+  .rightZPiece {
+    background-color: #FAA0A0;
+  }
+  
+  .linePiece {
+    background-color: #FF964F;
+  }

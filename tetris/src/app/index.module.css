@@ -50,26 +50,6 @@
   background-color: white;
 }
 
-.redSquare {
-  background-color: red;
-}
-
-.greenSquare {
-  background-color: green;
-}
-
-.blueSquare {
-  background-color: blue;
-}
-
-.redSquare {
-  background-color: red;
-}
-
-.greenSquare {
-  background-color: green;
-}
-
-.yellowSquare {
-  background-color: yellow;
+.lockedBlock {
+  background-color: #cfcfc4;
 }
