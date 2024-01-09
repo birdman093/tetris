@@ -20,6 +20,8 @@ export abstract class AbstractPiece {
     rotation: number;
     speed: number;
     abstract style: string;
+    abstract configurations: Location[][];
+    abstract configuration0: Location[];
 
     constructor(x: number, y: number, rotation: number, speed: number) {
         this.location = new Location(x, y);
@@ -35,7 +37,15 @@ export abstract class AbstractPiece {
         return this.location.y();
     }
 
-    abstract getAllPoints(): Location[];
+    getAllPoints(): Location[]{
+        const currentconfiguration = 
+        this.configurations[this.rotation%this.configurations.length];
+        if (currentconfiguration){
+            return currentconfiguration;
+        } else {
+            return this.configuration0;
+        }
+    }
 
     isPieceAtPoint(x: number, y: number): boolean {
         for (const point of this.getAllPoints()) {
@@ -67,81 +77,147 @@ export abstract class AbstractPiece {
 
 export class Square extends AbstractPiece {
     style: string = `squarePiece`
-    getAllPoints(): Location[]{
-        return [new Location(this.x(), this.y()),
-            new Location(this.x(), this.y()+1),
-            new Location(this.x()+1, this.y()),
-            new Location(this.x()+1, this.y()+1)];
-    }
+    configuration0: Location[] = [new Location(this.x(), this.y()),
+        new Location(this.x(), this.y()+1),
+        new Location(this.x()+1, this.y()),
+        new Location(this.x()+1, this.y()+1)
+    ]
+    configurations: Location[][] = [this.configuration0];
 }
 
 export class Triangle extends AbstractPiece {
     style: string = `trianglePiece`;
-    getAllPoints(): Location[]{
-        return [
-            new Location(this.x(), this.y()),
-            new Location(this.x(), this.y()-1),
-            new Location(this.x()+1, this.y()),
-            new Location(this.x()-1, this.y())];
-    } 
+    configuration0: Location[] = [new Location(this.x(), this.y()),
+    new Location(this.x(), this.y()-1),
+    new Location(this.x()+1, this.y()),
+    new Location(this.x()-1, this.y())];
+    configuration1: Location[] = [new Location(this.x(), this.y()),
+        new Location(this.x(), this.y()-1),
+        new Location(this.x()+1, this.y()),
+        new Location(this.x(), this.y()+1)];
+    configuration2: Location[] = [new Location(this.x(), this.y()),
+        new Location(this.x()-1, this.y()),
+        new Location(this.x()+1, this.y()),
+        new Location(this.x(), this.y()+1)];
+    configuration3: Location[] = [new Location(this.x(), this.y()),
+        new Location(this.x()-1, this.y()),
+        new Location(this.x(), this.y()-1),
+        new Location(this.x(), this.y()+1)];
+
+    configurations: Location[][] = [this.configuration0, this.configuration1,
+    this.configuration2, this.configuration3];
 }
 
 export class RightL extends AbstractPiece {
     style: string = `rightLPiece`;
-    getAllPoints(): Location[]{
-        return [
-            new Location(this.x(), this.y()),
-            new Location(this.x()-1, this.y()),
-            new Location(this.x()+1, this.y()),
-            new Location(this.x()+1, this.y()-1)];
-    } 
+    configuration0: Location[] = [
+        new Location(this.x(), this.y()),
+        new Location(this.x()-1, this.y()),
+        new Location(this.x()+1, this.y()),
+        new Location(this.x()+1, this.y()-1)]; 
+    configuration1: Location[] = [
+        new Location(this.x(), this.y()),
+        new Location(this.x(), this.y()+1),
+        new Location(this.x(), this.y()-1),
+        new Location(this.x()+1, this.y()+1)];
+    configuration2: Location[] = [
+        new Location(this.x(), this.y()),
+        new Location(this.x()-1, this.y()),
+        new Location(this.x()+1, this.y()),
+        new Location(this.x()-1, this.y()+1)]; 
+    configuration3: Location[] = [
+        new Location(this.x(), this.y()),
+        new Location(this.x(), this.y()+1),
+        new Location(this.x(), this.y()-1),
+        new Location(this.x()-1, this.y()-1)];
+
+    configurations: Location[][] = [this.configuration0, this.configuration1,
+        this.configuration2, this.configuration3];
 }
 
 export class LeftL extends AbstractPiece {
     style: string = `leftLPiece`;
-    getAllPoints(): Location[]{
-        return [
-            new Location(this.x(), this.y()),
-            new Location(this.x()-1, this.y()-1),
-            new Location(this.x()+1, this.y()),
-            new Location(this.x()-1, this.y())];
-    } 
+    configuration0: Location[] = [
+        new Location(this.x(), this.y()),
+        new Location(this.x()-1, this.y()-1),
+        new Location(this.x()+1, this.y()),
+        new Location(this.x()-1, this.y())
+    ];
+    configuration1: Location[] = [
+        new Location(this.x(), this.y()),
+        new Location(this.x()+1, this.y()-1),
+        new Location(this.x(), this.y()+1),
+        new Location(this.x(), this.y()-1)
+    ];
+    configuration2: Location[] = [
+        new Location(this.x(), this.y()),
+        new Location(this.x()+1, this.y()+1),
+        new Location(this.x()+1, this.y()),
+        new Location(this.x()-1, this.y())
+    ];
+    configuration3: Location[] = [
+        new Location(this.x(), this.y()),
+        new Location(this.x()-1, this.y()+1),
+        new Location(this.x(), this.y()+1),
+        new Location(this.x(), this.y()-1)
+    ];
+
+    configurations: Location[][] = [this.configuration0, this.configuration1,
+        this.configuration2, this.configuration3];
 }
 
 export class LeftZ extends AbstractPiece {
     style: string = `leftZPiece`;
-    getAllPoints(): Location[]{
-        return [
-            new Location(this.x(), this.y()),
-            new Location(this.x()-1, this.y()),
-            new Location(this.x(), this.y()-1),
-            new Location(this.x()+1, this.y()-1)];
-    } 
+    configuration0: Location[] = [
+        new Location(this.x(), this.y()),
+        new Location(this.x()-1, this.y()),
+        new Location(this.x(), this.y()-1),
+        new Location(this.x()+1, this.y()-1)];
+    
+    configuration1: Location[] = [
+        new Location(this.x(), this.y()),
+        new Location(this.x()+1, this.y()),
+        new Location(this.x(), this.y()-1),
+        new Location(this.x()+1, this.y()+1)];
+    configurations: Location[][] = [this.configuration0, this.configuration1];
 }
 
 export class RightZ extends AbstractPiece {
     style: string = `rightZPiece`;
-    getAllPoints(): Location[]{
-        return [
-            new Location(this.x(), this.y()),
-            new Location(this.x()+1, this.y()),
-            new Location(this.x(), this.y()-1),
-            new Location(this.x()-1, this.y()-1)];
-    } 
+    configuration0: Location[] = [
+        new Location(this.x(), this.y()),
+        new Location(this.x()+1, this.y()),
+        new Location(this.x(), this.y()-1),
+        new Location(this.x()-1, this.y()-1)];
+    configuration1: Location[] = [
+        new Location(this.x(), this.y()),
+        new Location(this.x()+1, this.y()),
+        new Location(this.x(), this.y()+1),
+        new Location(this.x()+1, this.y()-1)];
+    configurations: Location[][] = [this.configuration0, this.configuration1];
 }
 
 export class Line extends AbstractPiece {
     style: string = `linePiece`;
-    getAllPoints(): Location[]{
-        return [new Location(this.x(), this.y()),
-            new Location(this.x()-1, this.y()),
-            new Location(this.x()+1, this.y()),
-            new Location(this.x()+2, this.y())];
-    } 
+    configuration0: Location[] = [
+        new Location(this.x(), this.y()),
+        new Location(this.x()-1, this.y()),
+        new Location(this.x()+1, this.y()),
+        new Location(this.x()+2, this.y())]
+
+    configuration1: Location[] = [
+        new Location(this.x(), this.y()-2),
+        new Location(this.x(), this.y()-1),
+        new Location(this.x(), this.y()),
+        new Location(this.x(), this.y()+1)]
+
+    configurations: Location[][] = [this.configuration0, this.configuration1];
 }
 
-type PieceConstructor = new (x: number, y: number, rotation: number, speed: number) => AbstractPiece;
-const Pieces: PieceConstructor[] = [Square, Triangle, RightL, LeftL, RightZ, LeftZ, Line];
+type PieceConstructor = 
+new (x: number, y: number, rotation: number, speed: number) => AbstractPiece;
+const Pieces: PieceConstructor[] = 
+[Square, Triangle, RightL, LeftL, RightZ, LeftZ, Line];
 
 
 export function recreatePieceWOffset(xOffset: number, yOffset: number, 
