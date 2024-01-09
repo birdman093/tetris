@@ -6,6 +6,7 @@ import { AbstractPiece, Location, createPiece, recreatePieceWOffset} from "./pie
 
 import styles from "./index.module.css";
 import "../styles/pieces.css";
+import { clear } from "console";
 
 const ROWS = 20;
 const COLS = 10;
@@ -54,6 +55,14 @@ export default function Home() {
     useEffect(() => {
       speedRef.current = speed;
   }, [speed]);
+  const scoreRef = useRef(score);
+    useEffect(() => {
+      scoreRef.current = score;
+  }, [speed]);
+  const highscoreRef = useRef(highscore);
+    useEffect(() => {
+      highscoreRef.current = highscore;
+  }, [speed]);
 
 
   // game arrow handlers
@@ -63,19 +72,15 @@ export default function Home() {
         switch (event.key) {
           case 'ArrowUp':
             movePiece(0,0,1);
-            console.log('Up key pressed');
             break;
           case 'ArrowDown':
             movePiece(0,1,0);
-            console.log('Down key pressed');
             break;
           case 'ArrowLeft':
             movePiece(-1,0,0);
-            console.log('Left key pressed');
             break;
           case 'ArrowRight':
             movePiece(1,0,0);
-            console.log('Right key pressed');
             break;
           default:
             // Handle other keys
@@ -102,7 +107,7 @@ export default function Home() {
       const currentrow = currboard[point.y()];
       if (currentrow && currentrow[point.x()] === true) {
         setGame("NONE");
-        setScore(1000);
+        setHighScore(Math.max(scoreRef.current, highscoreRef.current));
         if (currpiece != null){
           clearInterval(currpiece.speed)
         }
@@ -210,7 +215,48 @@ export default function Home() {
     };
 
     setBoard(newBoard);
-    // Clear Lines
+    const clearedRows = rowsToClear(newBoard);
+    if (clearedRows.length > 0)
+    {
+      setScore(scoreRef.current + clearedRows.length)
+      // BLINK cleared rows
+      console.log("BLINK --> "+ clearedRows)
+      // Remove rows
+      for (const rowIndex of clearedRows) {
+        if (rowIndex >= 0 && rowIndex < currBoard.length) {
+            currBoard.splice(rowIndex, 1);
+        }
+      }
+
+      // Add rows
+      for (let i = 0; i < clearedRows.length; i++) {
+        currBoard.unshift(new Array(COLS).fill(false));
+      }
+      setBoard(currBoard);
+    }
+    
+  }
+
+  // Returns full rows in reverse order 
+  function rowsToClear(currBoard: boolean[][]): number[] {
+    const completed = []
+    for (let rowIndex = currBoard.length - 1; rowIndex >= 0; rowIndex--) {
+      const row = currBoard[rowIndex];
+      if (!row){
+        continue;
+      }
+      let complete = true;
+      for (const elm of row){
+        if (elm === false){
+          complete = false;
+          break;
+        }
+      }
+      if (complete){
+        completed.push(rowIndex)
+      }
+    }
+    return completed;
   }
 
   function handleNewGame() {
@@ -272,8 +318,8 @@ export default function Home() {
     <main className={styles.main}>
       <div className = {styles.gamestats}>
         <button onClick={handleNewGame}>New Game</button>
-        <h3 className = {styles.scores}>High Score : {score}</h3>
-        <h3 className = {styles.scores}>Score : {highscore}</h3>
+        <h3 className = {styles.scores}>High Score : {highscore}</h3>
+        <h3 className = {styles.scores}>Score : {score}</h3>
         <h3 className = {styles.scores}>Game State : {game}</h3>
       </div>
       {displayBoard()}
