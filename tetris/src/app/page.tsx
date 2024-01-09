@@ -17,6 +17,7 @@ const BOTTOM = "BOTTOM";
 const PIECE = "PIECE";
 const NONE = "NONE"
 const COLLISIONSTATES = [BOUNDARY, BOTTOM, PIECE, NONE];
+const RED = "red";
 
 function resetBoard() { 
   let matrix = [];
@@ -31,7 +32,7 @@ function resetBoard() {
 }
 
 function createPiece() {
-  return new Piece(ROWS/2,2,0,-1,"red");
+  return new Piece(COLS/2,2,0,-1,RED);
 }
 
 export default function Home() {
@@ -43,7 +44,7 @@ export default function Home() {
   const [highscore, setHighScore] = useState(0);
   const [speed, setSpeed] = useState(1000);
 
-  // Handles stale state from functions defined in useEffect
+  // Handles stale state for functions in useEffect
   const gameRef = useRef(game);
     useEffect(() => {
         gameRef.current = game;
@@ -52,6 +53,15 @@ export default function Home() {
   useEffect(() => {
       pieceRef.current = piece;
   }, [piece]);
+  const boardRef = useRef(board);
+  useEffect(() => {
+    boardRef.current = board;
+  }, [board]);
+  const speedRef = useRef(speed);
+    useEffect(() => {
+      speedRef.current = speed;
+  }, [speed]);
+
 
   // game arrow handlers
   useEffect(() => {
@@ -91,107 +101,111 @@ export default function Home() {
   }, []);
 
   const startPiece = (newPiece: Piece) => {
+    const currpiece = pieceRef.current;
     // clear current piece
-    if (piece != null){
-      clearInterval(piece.speed)
+    if (currpiece != null){
+      clearInterval(currpiece.speed)
     }
 
-    // set timer on new piece
-    newPiece.speed = setInterval(movePiece, speed, [0,1,0])
+    // timer confused for Node.js timeout -- assert return type
+    newPiece.speed = 
+    setInterval(movePiece, speedRef.current, 0,1,0) as unknown as number;
     setPiece(newPiece);
   }
 
   const movePiece = 
   (xOffset: number, yOffset: number, rotationOffset: number) => {
-    if (piece != null) {
+    const currpiece = pieceRef.current
+    if (currpiece != null) {
       // side boundary collision -- do not move piece
-      if (sideCollisionCheck(piece.getAllOffsetPoints(xOffset, yOffset)))
+      if (sideCollisionCheck(currpiece.getAllOffsetPoints(xOffset, yOffset)))
       {
         return;
       }
 
       // bottom boundary collision -- update board, create new piece
-      if (bottomCollisionCheck(piece.getAllOffsetPoints(xOffset, yOffset)))
+      if (bottomCollisionCheck(currpiece.getAllOffsetPoints(xOffset, yOffset)))
       {
-        updateBoard(piece.getAllPoints());
+        updateBoard(currpiece.getAllPoints());
         startPiece(createPiece());
         return;
       }
 
       // piece collision -- update board, create new piece
-      if (pieceCollisonCheck(piece.getAllOffsetPoints(xOffset, yOffset))) {
-        updateBoard(piece.getAllPoints());
+      if (pieceCollisonCheck(currpiece.getAllOffsetPoints(xOffset, yOffset))) {
+        updateBoard(currpiece.getAllPoints());
         startPiece(createPiece());
         return;
       }
 
       // no collision -- update piece
      startPiece(new Piece(
-        piece.x() + xOffset, 
-        piece.y() + yOffset, 
-        piece.rotation + rotationOffset,
-        piece.speed, 
-        piece.color
+      currpiece.x() + xOffset, 
+      currpiece.y() + yOffset, 
+      currpiece.rotation + rotationOffset,
+      currpiece.speed, 
+      currpiece.color
       ))
     }
     
   };
 
   const pieceCollisonCheck = (points: Location[]) => {
-    points.forEach(point => {
-      if (board && board.length > point.x() && point.x() >= 0){
-        const boardrow = board[point.x()]
-        if (boardrow && boardrow.length > point.y() && point.y() >= 0 
-        && boardrow[point.y()] == true){
-          return true;
-        }
+    const currBoard = boardRef.current;
+    if(!currBoard){
+      return false;
+    }
+    for (const point of points) {
+      const boardrow = currBoard[point.y()]
+      if (boardrow && boardrow[point.x()] == true) {
+        return true;
       }
-    });
+    };
     return false;
   }
 
   const sideCollisionCheck = (points: Location[]): boolean => {
-    points.forEach(point => {
-      if (point.x() < 0 || point.x() >= COLS){
+    for (const point of points) {
+      if (point.x() < 0 || point.x() >= COLS) {
         return true;
       }
-    });
+    }
     return false;
   }
 
   const bottomCollisionCheck = (points: Location[]): boolean => {
-    points.forEach(point => {
+    for (const point of points) {
       if (point.y() >= ROWS){
         return true;
       }
-    });
+    };
     return false;
   }
 
   const updateBoard = (points: Location[]) => {
-    const newBoard = _.cloneDeep(board);
+    const currBoard = boardRef.current;
+    const newBoard: boolean[][] = _.cloneDeep(currBoard);
     if (!newBoard){
       console.log("ERROR: Update Board - Cloning")
       return;
     }
-    points.forEach(point => {
+    for (const point of points) {
       const x = point.x();
       const y = point.y();
-      if (x >= 0 && x < COLS && y >= 0 && y < ROWS) {
-        const row = newBoard[x];
-        if (row && y < row.length) {
-            row[y] = true;
+      if (x >= 0 && x < COLS && y >= 0 && y < ROWS) 
+      {
+        // Typescript gymnastics to not have an undefined type issue
+        const row = newBoard[y]
+        if (row){
+          row[x] = true;
+          newBoard[y] = row;
         }
       }
-    });
+    };
 
     setBoard(newBoard);
-
     // Clear Lines
-
   }
-
-
 
   function handleNewGame() {
     if (game != NOGAME) {
@@ -207,17 +221,37 @@ export default function Home() {
   }
 
   const displayBoard = () => {
-
     const grid = []
-    for (let i = 0; i < ROWS; i++) {
+    for (let y = 0; y < ROWS; y++) {
       const row = [];
-      for (let j = 0; j < COLS; j++) {
+      for (let x = 0; x < COLS; x++) {
+          let squareClass = `${styles.gridSquare} ${styles.blankSquare}`;
+          if (board){
+            const currentrow = board[y];
+            if (!currentrow){
+              continue;
+            }
+            const currelm = currentrow[x];
+            if (currelm === true) {
+              squareClass = `${styles.gridSquare} ${styles.yellowSquare}`;
+            }
+          }
+
+          if (piece && piece.isPieceAtPoint(x, y))
+          {
+            if (piece.color === RED) {
+              squareClass = `${styles.gridSquare} ${styles.redSquare}`;
+            } else {
+              squareClass = `${styles.gridSquare} ${styles.greenSquare}`;
+            }
+          }
+
           row.push(
-              <div key={`${i}-${j}`} className={styles.gridSquare}></div>
+              <div key={`${y}-${x}`} className={squareClass}></div>
           );
       }
       grid.push(
-          <div key={i} className={styles.gridRow}>{row}</div>
+          <div key={y} className={styles.gridRow}>{row}</div>
       );
     }
 
@@ -233,9 +267,9 @@ export default function Home() {
     <main className={styles.main}>
       <div className = {styles.gamestats}>
         <button onClick={handleNewGame}>New Game</button>
-        <h6 className = {styles.scores}>High Score : {score}</h6>
+        <h3 className = {styles.scores}>High Score : {score}</h3>
         <h3 className = {styles.scores}>Score : {highscore}</h3>
-        <h3>Game State : {game}</h3>
+        <h3 className = {styles.scores}>Game State : {game}</h3>
       </div>
       {displayBoard()}
     </main>

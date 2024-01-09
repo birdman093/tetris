@@ -1,3 +1,5 @@
+import { Dictionary } from "lodash";
+
 export class Location {
     X: number;
     Y: number;
@@ -50,6 +52,15 @@ export class Piece {
             new Location(this.x()-1, this.y()+1),
             new Location(this.x()-1, this.y()),
             new Location(this.x()-1, this.y()-1)];
+    }
+
+    isPieceAtPoint(x: number, y: number): boolean {
+        for (const point of this.getAllPoints()) {
+            if (point.x() === x && point.y() === y) {
+                return true;
+            }
+        }
+        return false;
     }
 
     getAllOffsetPoints(x: number, y: number): Location[]{

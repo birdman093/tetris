@@ -45,3 +45,31 @@
   aspect-ratio: 1 / 1; /* Square boxes */
   border: 1px solid #ccc; /* Optional: for visibility */
 }
+
+.blankSquare {
+  background-color: white;
+}
+
+.redSquare {
+  background-color: red;
+}
+
+.greenSquare {
+  background-color: green;
+}
+
+.blueSquare {
+  background-color: blue;
+}
+
+.redSquare {
+  background-color: red;
+}
+
+.greenSquare {
+  background-color: green;
+}
+
+.yellowSquare {
+  background-color: yellow;
+}
