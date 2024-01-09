@@ -134,13 +134,13 @@ export default function Home() {
     const currpiece = pieceRef.current
     if (currpiece != null) {
       // side boundary collision -- do not move piece
-      if (sideCollisionCheck(currpiece.getAllOffsetPoints(xOffset, yOffset)))
+      if (sideCollisionCheck(currpiece.getAllOffsetPoints(xOffset, yOffset, rotationOffset)))
       {
         return;
       }
 
       // bottom boundary collision -- update board, create new piece
-      if (bottomCollisionCheck(currpiece.getAllOffsetPoints(xOffset, yOffset)))
+      if (bottomCollisionCheck(currpiece.getAllOffsetPoints(xOffset, yOffset, rotationOffset)))
       {
         updateBoard(currpiece.getAllPoints());
         startPiece(createPiece(COLS/2, 1), true);
@@ -148,7 +148,7 @@ export default function Home() {
       }
 
       // piece collision -- update board, create new piece
-      if (pieceCollisonCheck(currpiece.getAllOffsetPoints(xOffset, yOffset))) {
+      if (pieceCollisonCheck(currpiece.getAllOffsetPoints(xOffset, yOffset, rotationOffset))) {
         updateBoard(currpiece.getAllPoints());
         startPiece(createPiece(COLS/2, 1), true);
         return;

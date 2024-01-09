@@ -56,10 +56,19 @@ export abstract class AbstractPiece {
         return false;
     }
 
-    getAllOffsetPoints(x: number, y: number): Location[] {
+    getAllOffsetPoints(xOffset: number, yOffset: number, rotationOffset: number): Location[] {
+        // rotation Offset
+        let currentconfiguration = 
+        this.configurations[(this.rotation + rotationOffset)
+            %this.configurations.length];
+        if (!currentconfiguration){
+            currentconfiguration = this.configuration0;
+        }
+
+        // x, y Offset
         const offsetPoints: Location[] = []
-        for (const point of this.getAllPoints()){
-            offsetPoints.push(new Location(point.x()+x, point.y()+y))
+        for (const point of currentconfiguration){
+            offsetPoints.push(new Location(point.x()+xOffset, point.y()+yOffset))
         }
         return offsetPoints;
     }
