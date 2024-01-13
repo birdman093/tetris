@@ -83,7 +83,7 @@ export abstract class AbstractPiece {
 
 
 export class Square extends AbstractPiece {
-    style: string = `squarePiece`
+    style = `squarePiece`;
     configuration0: Location[] = [new Location(this.x(), this.y()),
         new Location(this.x(), this.y()+1),
         new Location(this.x()+1, this.y()),
@@ -93,7 +93,7 @@ export class Square extends AbstractPiece {
 }
 
 export class Triangle extends AbstractPiece {
-    style: string = `trianglePiece`;
+    style = `trianglePiece`;
     configuration0: Location[] = [new Location(this.x(), this.y()),
     new Location(this.x(), this.y()-1),
     new Location(this.x()+1, this.y()),
@@ -116,7 +116,7 @@ export class Triangle extends AbstractPiece {
 }
 
 export class RightL extends AbstractPiece {
-    style: string = `rightLPiece`;
+    style = `rightLPiece`;
     configuration0: Location[] = [
         new Location(this.x(), this.y()),
         new Location(this.x()-1, this.y()),
@@ -143,7 +143,7 @@ export class RightL extends AbstractPiece {
 }
 
 export class LeftL extends AbstractPiece {
-    style: string = `leftLPiece`;
+    style = `leftLPiece`;
     configuration0: Location[] = [
         new Location(this.x(), this.y()),
         new Location(this.x()-1, this.y()-1),
@@ -174,7 +174,7 @@ export class LeftL extends AbstractPiece {
 }
 
 export class LeftZ extends AbstractPiece {
-    style: string = `leftZPiece`;
+    style = `leftZPiece`;
     configuration0: Location[] = [
         new Location(this.x(), this.y()),
         new Location(this.x()-1, this.y()),
@@ -190,7 +190,7 @@ export class LeftZ extends AbstractPiece {
 }
 
 export class RightZ extends AbstractPiece {
-    style: string = `rightZPiece`;
+    style = `rightZPiece`;
     configuration0: Location[] = [
         new Location(this.x(), this.y()),
         new Location(this.x()+1, this.y()),
@@ -205,7 +205,7 @@ export class RightZ extends AbstractPiece {
 }
 
 export class Line extends AbstractPiece {
-    style: string = `linePiece`;
+    style = `linePiece`;
     configuration0: Location[] = [
         new Location(this.x(), this.y()),
         new Location(this.x()-1, this.y()),

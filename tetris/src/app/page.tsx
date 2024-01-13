@@ -1,12 +1,12 @@
 "use client"
 import Link from "next/link";
-import { Dispatch, SetStateAction, useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import _ from 'lodash';
-import { AbstractPiece, Location, createPiece, recreatePieceWOffset} from "./piece";
+import { createPiece, recreatePieceWOffset} from "./piece";
+import type {AbstractPiece, Location} from "./piece";
 
 import styles from "./index.module.css";
 import "../styles/pieces.css";
-import { clear } from "console";
 
 const ROWS = 20;
 const COLS = 10;
@@ -16,9 +16,9 @@ const PAUSED = "PAUSED";
 const GAMESTATES = [PLAYING, NOGAME, PAUSED];
 
 function resetBoard() { 
-  let matrix = [];
+  const matrix = [];
   for (let i = 0; i < ROWS; i++) {
-      let row = [];
+      const row = [];
       for (let j = 0; j < COLS; j++) {
           row.push(false);
       }
@@ -233,8 +233,9 @@ export default function Home() {
       setScore(newlines);
       console.log(`Current: ${newlines} Previous: ${previouslines}`);
       updateSpeed(previouslines, newlines);
-      // BLINK cleared rows
-      console.log("BLINK --> "+ clearedRows)
+      
+      // TODO: BLINK cleared rows
+
       // Remove rows
       for (const rowIndex of clearedRows) {
         if (rowIndex >= 0 && rowIndex < newBoard.length) {
@@ -243,8 +244,9 @@ export default function Home() {
       }
 
       // Add rows
-      for (let i = 0; i < clearedRows.length; i++) {
-        newBoard.unshift(new Array(COLS).fill(false));
+      for (const rowIndex of clearedRows) {
+        const newrow: boolean[] = new Array<boolean>(COLS).fill(false)
+        newBoard.unshift(newrow);
       }
       
     }
