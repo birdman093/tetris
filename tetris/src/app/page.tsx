@@ -75,6 +75,7 @@ export default function Home() {
 
   // game arrow handlers
   useEffect(() => {
+    // Handling keyPress in the useEffect causes all the useRef usages
     const handleKeyPress = (event: KeyboardEvent) => {
       if (gameRef.current === PLAYING && pieceRef.current != null){
         switch (event.key) {
