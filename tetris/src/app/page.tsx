@@ -79,11 +79,7 @@ export default function Home() {
   }, [highscore]);
   const fallintervalRef = useRef(fallintervalID);
   useEffect(() => {
-    // CHEAT for now to clear all intervals
-    for (let id = fallintervalRef.current; id < fallintervalID; id++) {
-      clearInterval(id);
-    }
-    //clearInterval(fallintervalRef.current);
+    clearTimeout(fallintervalRef.current)
     fallintervalRef.current = fallintervalID;
   }, [fallintervalID]);
 
@@ -107,7 +103,6 @@ export default function Home() {
             movePiece(1,0,0);
             break;
           default:
-            // Handle other keys
             break;
           }
       }
@@ -135,11 +130,15 @@ export default function Home() {
     }
 
     if (resetTimer) {
-      // timer confused by Node.js timeout -- assert return type
-      const newfallid = setInterval(movePiece, speedRef.current, 0,1,0) as unknown as number
-      setFallIntervalID(newfallid);
+      resetTimerID();
     }
     setPiece(newPiece);
+  }
+
+  const resetTimerID = () => {
+    // timer confused by Node.js timeout -- assert return type
+    const newfallid = setTimeout(movePiece, speedRef.current, 0,1,0) as unknown as number
+    setFallIntervalID(newfallid);
   }
 
   const movePiece = 
@@ -301,9 +300,10 @@ export default function Home() {
     }
     setHighScore(Math.max(highscore, score));
     setScore(0);
-    setGame(PLAYING)
+    setGame(PLAYING);
     setBoard(resetBoard());
     setPiece(createPiece(COLS/2, 1));
+    resetTimerID();
   }
 
   const displayBoard = () => {
