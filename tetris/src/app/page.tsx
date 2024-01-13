@@ -224,9 +224,8 @@ export default function Home() {
       }
     };
 
-    setBoard(newBoard);
+    //setBoard(newBoard);
     const clearedRows = rowsToClear(newBoard);
-
     if (clearedRows.length > 0)
     {
       const previouslines = scoreRef.current;
@@ -238,17 +237,18 @@ export default function Home() {
       console.log("BLINK --> "+ clearedRows)
       // Remove rows
       for (const rowIndex of clearedRows) {
-        if (rowIndex >= 0 && rowIndex < currBoard.length) {
-            currBoard.splice(rowIndex, 1);
+        if (rowIndex >= 0 && rowIndex < newBoard.length) {
+            newBoard.splice(rowIndex, 1);
         }
       }
 
       // Add rows
       for (let i = 0; i < clearedRows.length; i++) {
-        currBoard.unshift(new Array(COLS).fill(false));
+        newBoard.unshift(new Array(COLS).fill(false));
       }
-      setBoard(currBoard);
+      
     }
+    setBoard(newBoard);
     
   }
 
@@ -257,7 +257,7 @@ export default function Home() {
     const curr10 = Math.floor(completedlines / 10);
     const prev10 = Math.floor(previouslines / 10);
     if (curr10 > prev10){
-      const newspeed = currspeed * Math.pow(0.90,curr10-prev10);
+      const newspeed = currspeed * Math.pow(0.80,curr10-prev10);
       console.log(`Current: ${curr10} Previous: ${prev10} Speed: ${newspeed}`);
       setSpeed(newspeed);
     }
@@ -293,7 +293,7 @@ export default function Home() {
     }
     setHighScore(Math.max(highscore, score));
     setScore(0);
-    setGame("PLAYING")
+    setGame(PLAYING)
     setBoard(resetBoard());
     setPiece(createPiece(COLS/2, 1));
   }
