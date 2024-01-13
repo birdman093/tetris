@@ -18,15 +18,13 @@ export class Location {
 export abstract class AbstractPiece {
     location: Location;
     rotation: number;
-    speed: number;
     abstract style: string;
     abstract configurations: Location[][];
     abstract configuration0: Location[];
 
-    constructor(x: number, y: number, rotation: number, speed: number) {
+    constructor(x: number, y: number, rotation: number) {
         this.location = new Location(x, y);
         this.rotation = rotation;
-        this.speed = speed;
     }
 
     x(): number {
@@ -224,7 +222,7 @@ export class Line extends AbstractPiece {
 }
 
 type PieceConstructor = 
-new (x: number, y: number, rotation: number, speed: number) => AbstractPiece;
+new (x: number, y: number, rotation: number) => AbstractPiece;
 const Pieces: PieceConstructor[] = 
 [Square, Triangle, RightL, LeftL, RightZ, LeftZ, Line];
 
@@ -236,8 +234,7 @@ export function recreatePieceWOffset(xOffset: number, yOffset: number,
     return new pieceConstructor(
         piece.x() + xOffset, 
         piece.y() + yOffset, 
-        piece.rotation + rotationOffset,
-        piece.speed
+        piece.rotation + rotationOffset
       );
 }
 
@@ -245,9 +242,9 @@ export function createPiece(start_x: number, start_y: number): AbstractPiece {
     const randomBlock = Pieces[Math.floor(Math.random() * Pieces.length)];
     if (!randomBlock){
         console.log("ERROR creating piece")
-        return new Line(start_x,start_y,0,-1);
+        return new Line(start_x,start_y,0);
     } else {
-        return new randomBlock(start_x,start_y,0,-1);
+        return new randomBlock(start_x,start_y,0);
     }
   }
 

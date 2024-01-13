@@ -37,6 +37,7 @@ export default function Home() {
   const [score, setScore] = useState(0);
   const [highscore, setHighScore] = useState(0);
   const [speed, setSpeed] = useState(1000);
+  const [fallintervalID, setFallIntervalID] = useState(0);
 
   // Handles stale state for functions in useEffect
   const gameRef = useRef(game);
@@ -51,18 +52,25 @@ export default function Home() {
   useEffect(() => {
     boardRef.current = board;
   }, [board]);
+  
   const speedRef = useRef(speed);
     useEffect(() => {
       speedRef.current = speed;
   }, [speed]);
+
   const scoreRef = useRef(score);
     useEffect(() => {
       scoreRef.current = score;
-  }, [speed]);
+  }, [score]);
+
   const highscoreRef = useRef(highscore);
     useEffect(() => {
       highscoreRef.current = highscore;
-  }, [speed]);
+  }, [highscore]);
+  const fallintervalRef = useRef(fallintervalID);
+    useEffect(() => {
+      fallintervalRef.current = fallintervalID;
+  }, [fallintervalID]);
 
 
   // game arrow handlers
@@ -101,31 +109,30 @@ export default function Home() {
   const startPiece = (newPiece: AbstractPiece, resetTimer: boolean) => {
     const currpiece = pieceRef.current;
     const currboard = boardRef.current;
+    const fallinterval = fallintervalRef.current;
 
     // check if piece can be created
     for (const point of newPiece.getAllPoints()) {
       const currentrow = currboard[point.y()];
       if (currentrow && currentrow[point.x()] === true) {
-        setGame("NONE");
+        setGame("NONE"); 
         setHighScore(Math.max(scoreRef.current, highscoreRef.current));
         if (currpiece != null){
-          clearInterval(currpiece.speed)
+          clearInterval(fallinterval)
+          setFallIntervalID(0);
         }
+        setPiece(null);
         return;
       }
     }
-    // clear and set timer
-    if (currpiece != null && resetTimer){
-      clearInterval(currpiece.speed)
-      // timer confused for Node.js timeout -- assert return type
-      newPiece.speed = 
-      setInterval(movePiece, speedRef.current, 0,1,0) as unknown as number;
-    } else if (currpiece!= null){
-      newPiece.speed = currpiece.speed;
-    } else {
-      newPiece.speed = 
-      setInterval(movePiece, speedRef.current, 0,1,0) as unknown as number;
-    }   
+
+    if (resetTimer) {
+      clearInterval(fallinterval)
+      // timer confused by Node.js timeout -- assert return type
+      setFallIntervalID(setInterval(movePiece, speedRef.current, 0,1,0) as unknown as number);
+    }
+    
+
     setPiece(newPiece);
   }
 
@@ -147,10 +154,13 @@ export default function Home() {
         return;
       }
 
-      // piece collision -- update board, create new piece
-      if (pieceCollisonCheck(currpiece.getAllOffsetPoints(xOffset, yOffset, rotationOffset))) {
+      // piece collision -- update board if piece is moving down, and create new piece
+      const pieceCollison = pieceCollisonCheck(currpiece.getAllOffsetPoints(xOffset, yOffset, rotationOffset));
+      if (yOffset === 1 && pieceCollison) {
         updateBoard(currpiece.getAllPoints());
         startPiece(createPiece(COLS/2, 1), true);
+        return;
+      } else if (pieceCollison) {
         return;
       }
 
@@ -216,9 +226,14 @@ export default function Home() {
 
     setBoard(newBoard);
     const clearedRows = rowsToClear(newBoard);
+
     if (clearedRows.length > 0)
     {
-      setScore(scoreRef.current + clearedRows.length)
+      const previouslines = scoreRef.current;
+      const newlines = previouslines + clearedRows.length
+      setScore(newlines);
+      console.log(`Current: ${newlines} Previous: ${previouslines}`);
+      updateSpeed(previouslines, newlines);
       // BLINK cleared rows
       console.log("BLINK --> "+ clearedRows)
       // Remove rows
@@ -235,6 +250,17 @@ export default function Home() {
       setBoard(currBoard);
     }
     
+  }
+
+  function updateSpeed(previouslines: number, completedlines: number){
+    const currspeed = speedRef.current;
+    const curr10 = Math.floor(completedlines / 10);
+    const prev10 = Math.floor(previouslines / 10);
+    if (curr10 > prev10){
+      const newspeed = currspeed * Math.pow(0.90,curr10-prev10);
+      console.log(`Current: ${curr10} Previous: ${prev10} Speed: ${newspeed}`);
+      setSpeed(newspeed);
+    }
   }
 
   // Returns full rows in reverse order 
