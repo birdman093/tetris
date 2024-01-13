@@ -27,7 +27,9 @@ function resetBoard() {
   return matrix
 }
 
-
+function resetSpeed() {
+  return 800;
+}
 
 export default function Home() {
 
@@ -36,40 +38,53 @@ export default function Home() {
   const [piece, setPiece] = useState<AbstractPiece|null>(null);
   const [score, setScore] = useState(0);
   const [highscore, setHighScore] = useState(0);
-  const [speed, setSpeed] = useState(1000);
+  const [speed, setSpeed] = useState(resetSpeed());
   const [fallintervalID, setFallIntervalID] = useState(0);
 
   // Handles stale state for functions in useEffect
   const gameRef = useRef(game);
-    useEffect(() => {
-        gameRef.current = game;
-    }, [game]);
+  useEffect(() => {
+      if (game == NOGAME){
+        setHighScore(Math.max(score, highscore));
+        setSpeed(resetSpeed())
+        setFallIntervalID(0);
+        setPiece(null);
+      }
+      gameRef.current = game;
+  }, [game]);
+
   const pieceRef = useRef(piece);
   useEffect(() => {
-      pieceRef.current = piece;
+    pieceRef.current = piece;
   }, [piece]);
+
   const boardRef = useRef(board);
   useEffect(() => {
     boardRef.current = board;
   }, [board]);
   
   const speedRef = useRef(speed);
-    useEffect(() => {
-      speedRef.current = speed;
+  useEffect(() => {
+    speedRef.current = speed;
   }, [speed]);
 
   const scoreRef = useRef(score);
-    useEffect(() => {
-      scoreRef.current = score;
+  useEffect(() => {
+    scoreRef.current = score;
   }, [score]);
 
   const highscoreRef = useRef(highscore);
-    useEffect(() => {
-      highscoreRef.current = highscore;
+  useEffect(() => {
+    highscoreRef.current = highscore;
   }, [highscore]);
   const fallintervalRef = useRef(fallintervalID);
-    useEffect(() => {
-      fallintervalRef.current = fallintervalID;
+  useEffect(() => {
+    // CHEAT for now to clear all intervals
+    for (let id = fallintervalRef.current; id < fallintervalID; id++) {
+      clearInterval(id);
+    }
+    //clearInterval(fallintervalRef.current);
+    fallintervalRef.current = fallintervalID;
   }, [fallintervalID]);
 
 
@@ -108,32 +123,22 @@ export default function Home() {
   }, []);
 
   const startPiece = (newPiece: AbstractPiece, resetTimer: boolean) => {
-    const currpiece = pieceRef.current;
     const currboard = boardRef.current;
-    const fallinterval = fallintervalRef.current;
 
     // check if piece can be created
     for (const point of newPiece.getAllPoints()) {
       const currentrow = currboard[point.y()];
       if (currentrow && currentrow[point.x()] === true) {
-        setGame("NONE"); 
-        setHighScore(Math.max(scoreRef.current, highscoreRef.current));
-        if (currpiece != null){
-          clearInterval(fallinterval)
-          setFallIntervalID(0);
-        }
-        setPiece(null);
+        setGame(NOGAME); 
         return;
       }
     }
 
     if (resetTimer) {
-      clearInterval(fallinterval)
       // timer confused by Node.js timeout -- assert return type
-      setFallIntervalID(setInterval(movePiece, speedRef.current, 0,1,0) as unknown as number);
+      const newfallid = setInterval(movePiece, speedRef.current, 0,1,0) as unknown as number
+      setFallIntervalID(newfallid);
     }
-    
-
     setPiece(newPiece);
   }
 
