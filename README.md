@@ -1,9 +1,11 @@
 # Tetris
-Tetris replica built with Next.js deployed at https://tetris-orpin-tau.vercel.app
+Tetris replica built with Next.js deployed at 
+https://tetris-orpin-tau.vercel.app
 
 ## Why?
 
-Inpsired by this coding challenge by John Crickett at https://codingchallenges.substack.com/p/coding-challenge-43-tetris
+Inpsired by this coding challenge by John Crickett at 
+https://codingchallenges.substack.com/p/coding-challenge-43-tetris
 
 ## Technologies
 ```
@@ -18,10 +20,10 @@ Deployment - vercel --prod
 ```
 
 ## Remaining Items as of 01/2024 
-- [ ] Timer Bug
+- [x] Timer Bug - Switch to SetTimeout from Set Interval
+- [ ] Audio start/end on game
 - [ ] "shifting" board Bug
 - [ ] CSS styling and Visual Effects
-- [ ] Audio
 - [ ] Leaderboard
 - [ ] New Features TBD
 

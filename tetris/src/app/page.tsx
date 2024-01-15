@@ -40,6 +40,7 @@ export default function Home() {
   const [highscore, setHighScore] = useState(0);
   const [speed, setSpeed] = useState(resetSpeed());
   const [fallintervalID, setFallIntervalID] = useState(0);
+  const [audioelm, setAudioElm] = useState<HTMLAudioElement|null>(null);
 
   // Handles stale state for functions in useEffect
   const gameRef = useRef(game);
@@ -49,6 +50,7 @@ export default function Home() {
         setSpeed(resetSpeed())
         setFallIntervalID(0);
         setPiece(null);
+        stopAudio(true);
       }
       gameRef.current = game;
   }, [game]);
@@ -238,8 +240,6 @@ export default function Home() {
       setScore(newlines);
       console.log(`Current: ${newlines} Previous: ${previouslines}`);
       updateSpeed(previouslines, newlines);
-      
-      // TODO: BLINK cleared rows
 
       // Remove rows
       for (const rowIndex of clearedRows) {
@@ -263,11 +263,19 @@ export default function Home() {
     const currspeed = speedRef.current;
     const curr10 = Math.floor(completedlines / 10);
     const prev10 = Math.floor(previouslines / 10);
+    lineClearBoom(curr10 > prev10);
     if (curr10 > prev10){
       const newspeed = currspeed * Math.pow(0.80,curr10-prev10);
       console.log(`Current: ${curr10} Previous: ${prev10} Speed: ${newspeed}`);
       setSpeed(newspeed);
     }
+  }
+
+  const lineClearBoom = (dramatic: boolean) => {
+    const audiomp3 = dramatic ? '10boom.mp3' : 'boom.mp3';
+    var audio = new Audio(audiomp3);
+    audio.currentTime = 0;
+    audio.play();
   }
 
   // Returns full rows in reverse order 
@@ -294,9 +302,14 @@ export default function Home() {
 
   function handleNewGame() {
     if (game != NOGAME) {
+      stopAudio(false);
       const userResponse = 
       confirm('Game is ongoing! Do you want to start a new game anyway?');
-      if (!userResponse){ return;}
+      if (!userResponse) { 
+        startAudio();
+        return;
+      } 
+      stopAudio(true); // reset music
     }
     setHighScore(Math.max(highscore, score));
     setScore(0);
@@ -304,6 +317,29 @@ export default function Home() {
     setBoard(resetBoard());
     setPiece(createPiece(COLS/2, 1));
     resetTimerID();
+    startAudio();
+  }
+
+  const startAudio = () => {
+    if (audioelm == null) {
+      var audio = new Audio('Tetris.mp3');
+      audio.play();
+      audio.loop=true;
+      setAudioElm(audio);
+    } else {
+      audioelm.play();
+    }
+    
+  }
+
+  const stopAudio = (resetTime: boolean) => {
+    if (audioelm != null) {
+      audioelm.pause();
+      if (resetTime){
+        audioelm.currentTime = 0;
+      }
+    }
+    
   }
 
   const displayBoard = () => {
