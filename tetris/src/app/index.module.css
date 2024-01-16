@@ -4,8 +4,6 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  /*background-image: linear-gradient(to bottom, #2e026d, #15162c);*/
-  overflow: hidden;
   background-color: rgb(26, 33, 44);
   color: white;
 }
@@ -53,6 +51,7 @@
   display: grid;
   grid-template-rows: repeat(20, 1fr);
   grid-template-columns: repeat(10, 1fr);
+  aspect-ratio: 1 / 2;
   margin: 1%;
   box-sizing: border-box;
   background-image: linear-gradient(gray, darkgray);
