@@ -273,9 +273,12 @@ export default function Home() {
 
   const lineClearBoom = (dramatic: boolean) => {
     const audiomp3 = dramatic ? '10boom.mp3' : 'boom.mp3';
-    var audio = new Audio(audiomp3);
+    const audio = new Audio(audiomp3);
     audio.currentTime = 0;
-    audio.play();
+    audio.play().then()
+        .catch((error) => {
+            console.error('Error playing audio:', error);
+        });
   }
 
   // Returns full rows in reverse order 
@@ -322,12 +325,12 @@ export default function Home() {
 
   const startAudio = () => {
     if (audioelm == null) {
-      var audio = new Audio('Tetris.mp3');
-      audio.play();
+      const audio = new Audio('Tetris.mp3');
+      audio.play().then().catch((error) =>{console.log("Error starting audio")} );
       audio.loop=true;
       setAudioElm(audio);
     } else {
-      audioelm.play();
+      audioelm.play().then().catch((error) =>{console.log("Error starting audio")} );
     }
     
   }
@@ -387,7 +390,8 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <div className = {styles.gamestats}>
-        <button className = {`${styles.start} ${styles.tetristitle}`} onClick={handleNewGame}>TETRIS</button>
+        <button className = {`${styles.start} ${styles.tetristitle}`} 
+        onClick={handleNewGame}>TETRIS</button>
         <div>
           <h3 className = {styles.scores}>High Score : {highscore}</h3>
           <h3 className = {styles.scores}>Score : {score}</h3>
