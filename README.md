@@ -21,9 +21,9 @@ Deployment - vercel --prod
 
 ## Remaining Items as of 01/2024 
 - [x] Timer Bug - Switch to SetTimeout from Set Interval
-- [ ] Audio start/end on game
+- [x] Audio start/end on game
 - [ ] "shifting" board Bug
-- [ ] CSS styling and Visual Effects
+- [x] CSS styling and Visual Effects
 - [ ] Leaderboard
 - [ ] New Features TBD
 

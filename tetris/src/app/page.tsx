@@ -387,10 +387,11 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <div className = {styles.gamestats}>
-        <button onClick={handleNewGame}>New Game</button>
-        <h3 className = {styles.scores}>High Score : {highscore}</h3>
-        <h3 className = {styles.scores}>Score : {score}</h3>
-        <h3 className = {styles.scores}>Game State : {game}</h3>
+        <button className = {`${styles.start} ${styles.tetristitle}`} onClick={handleNewGame}>TETRIS</button>
+        <div>
+          <h3 className = {styles.scores}>High Score : {highscore}</h3>
+          <h3 className = {styles.scores}>Score : {score}</h3>
+        </div> 
       </div>
       {displayBoard()}
     </main>
