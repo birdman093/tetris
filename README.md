@@ -20,9 +20,9 @@ Deployment - vercel --prod
 ```
 
 ## Gameplay Features
-<img src="tetris/public/img1.png" style="max-width: 300px;"></img>
+<img src="tetris/public/img1.png" width=300px></img>
 
-<img src="tetris/public/img2.png" style="max-width: 300px;"></img>
+<img src="tetris/public/img2.png" width=300px></img>
 
 ## Remaining Items as of 01/2024 
 - [x] Timer Bug - Switch to SetTimeout from Set Interval
